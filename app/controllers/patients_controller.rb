@@ -11,14 +11,34 @@ class PatientsController < ApplicationController
 		render json: @patient
 	end
 
+	def create
+		@patient = Patient.new(patient_params)
+	end
+
 	def recommendations
 		@recommendations = patient.recommendations
 		render json: @recommendations
 	end
 
 	def get_medical_data
+		
+		response = get_request('/GetFeatures')
+		result = JSON.parse(response)['data'].join(' ')
+		p JSON.parse(response)['data']
+		render json: response
+	end
+
+	private
+
+	def patient_params
+		params[:session_id] = create_session
+		params.permit(:birth_date, :email, :full_name, :phone, :session_id)
+	end
+
+	def create_session
 		response = get_request('/InitSession')
-		session = JSON.parse(response)["SessionID"]
+		session_id = JSON.parse(response)["SessionID"]
+
 		terms_of_use_url = [
 			'https://api.endlessmedical.com/v1/dx',
 			'AcceptTermsOfUse?SessionID=',
@@ -27,18 +47,8 @@ class PatientsController < ApplicationController
 		]
 		
 		terms_of_use_acceptance = Net::HTTP.post(URI(terms_of_use_url.join('')), {}.to_json, 'Content-Type' => 'application/json')
-
-
-		Net::HTTP.post(URI("https://api.endlessmedical.com/v1/dx/UpdateFeature?SessionID=#{session}&name=Age&value=#{50}"), {}.to_json, 'Content-Type' => 'application/json')
-		response = get_request('/GetFeatures')
-		result = JSON.parse(response)['data'].join(' ')
-		p result
-
-
-		render json: response
+		session_id
 	end
-
-	private
 
 	def get_request(additional_url_part)
 		base_url = "https://api.endlessmedical.com/v1/dx"
