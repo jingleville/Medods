@@ -18,7 +18,7 @@ class ConsultationRequestsController < ApplicationController
 	end
 
 	def create
-		@consultation_request = ConsultationRequest.new(consultation_request_params)
+		@consultation_request = @patient.consultation_requests.new(consultation_request_params)
 		if @consultation_request.save
 			render json: @consultation_request, status: :created
 		else
@@ -29,8 +29,13 @@ class ConsultationRequestsController < ApplicationController
 
 	private
 
-	def consultation_params
+	def consultation_request_params
 		params.permit(:request_body)
+	end
+
+	def consultation_request_symptoms
+		params.permit(:symptoms)
+		# смотри, тут короче передаются симптомы, нужен метод который проверяет, если симптомы есть в соответствующей таблице - добавляет их, ьуда, кстати надо еще и консультэйшен реквест добавить, и по симптомам посылает аналайз на апишку, и ответ уже сохраняет
 	end
 
 	def get_consultation

@@ -9,6 +9,7 @@
 #  phone      :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  session_id :string
 #
 class Patient < ApplicationRecord
 	has_many :consultation_requests

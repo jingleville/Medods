@@ -9,6 +9,7 @@
 #  phone      :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  session_id :string
 #
 
 # This model initially had no columns defined. If you add columns to the
